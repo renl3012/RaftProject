@@ -5,8 +5,8 @@ import java.awt.Graphics;
 
 public class River extends JFrame
 {
-	private static final int WIDTH = 800;
-	private static final int HEIGHT = 600;
+	private static final int WIDTH = 750;
+	private static final int HEIGHT = 991;
 
 	public River()
 	{

@@ -61,4 +61,7 @@ public abstract class MovingThing implements Locatable{
 		}
 	}
 	
+	public String toString(){
+		return "X: " + xPos + " Y: " + yPos + " ";
+	}
 }

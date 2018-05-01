@@ -11,7 +11,7 @@ public class Raft extends MovingThing{
 	private Image image;
 
 	public Raft(){
-		this(0, 0, 0);
+		this(300, 800, 0);
 	}
 	
 	public Raft(int x, int y){
@@ -24,11 +24,10 @@ public class Raft extends MovingThing{
 		
 		try
 		{
-			image = ImageIO.read(new File(System.getProperty("user.dir") + "\\src\\gameParts\\raftPic.png"));
+			image = ImageIO.read(new File(System.getProperty("user.dir") + "\\src\\gameParts\\raft.png"));
 		}
 		catch(Exception e)
 		{
-			//feel free to do something here
 			System.out.println("hi");
 		}
 	}
@@ -41,11 +40,14 @@ public class Raft extends MovingThing{
 	public int getSpeed() {
 		return speed;
 	}
-
 	
 	public void draw(Graphics window) {
 		window.drawImage(image,getX(),getY(),100,100,null);
 		
+	}
+	
+	public String toString(){
+		return super.toString() + "Speed: " + getSpeed();
 	}
 	
 }
