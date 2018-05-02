@@ -51,12 +51,12 @@ public class Log extends MovingThing{
 	
 	public void invisible(Graphics window )
 	{
-		window.drawImage(null, getX(), getY(), 80, 80, null);
+		window.drawImage(null, getX(), getY(), 125, 100, null);
 	}
 
 	public void draw( Graphics window )
 	{
-		window.drawImage(image,getX(),getY(),80,80,null);
+		window.drawImage(image,getX(),getY(),125,100,null);
 	}
 
 	public String toString()

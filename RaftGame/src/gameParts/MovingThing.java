@@ -46,10 +46,12 @@ public abstract class MovingThing implements Locatable{
 	{
 		if(direction.equals("LEFT")){
 			//add raft movement
+			setX(getX()-getSpeed());
 		}
 		
 		if(direction.equals("RIGHT")){
 			//add raft movement
+			setX(getX()+getSpeed());
 		}
 		
 		if(direction.equals("UP")){

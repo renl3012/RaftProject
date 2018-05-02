@@ -12,11 +12,9 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-
+import java.lang.Math;
 import javax.imageio.ImageIO;
-
 import gameParts.*;
-
 import java.awt.Image;
 
 
@@ -24,18 +22,27 @@ public class Downstream extends Canvas implements KeyListener, Runnable
 {
 
 	private BufferedImage back;
-	private Raft ship;
+	private Raft raft;
 	private boolean[] keys;
 	private Image backgroundPic;
+	private int randX;
+	
+	private Log branch;
 	
 	private ManyLogs send;
 	private Log[][] transfer;
-
 	private ArrayList<Log> logStream;
 	
 	public Downstream(){
-		ship = new Raft();
-		keys = new boolean[3];
+		raft = new Raft();
+		keys = new boolean[2];
+		
+		logStream = new ArrayList<Log>();
+		
+		for(int e = 0; e < 5; e++){
+			randX = (int)(Math.random() * 750);
+			logStream.add(new Log(randX, (e-1)*200, 2));
+		}
 	}
 	
 	public void update(Graphics window)
@@ -64,37 +71,31 @@ public class Downstream extends Canvas implements KeyListener, Runnable
 				//feel free to do something here
 				System.out.println("hi");
 			}
-	
-			graphToBack.setColor(Color.BLUE);
-			graphToBack.drawString("RAFTING", 25, 50);
-			graphToBack.drawImage(backgroundPic, 0, 0, null);
-			//graphToBack.setColor(Color.BLACK);
-			//graphToBack.fillRect(0,0,800,1000);
+
+			graphToBack.drawImage(backgroundPic, 0, 0, 750, 992, null);
 			
 			//********don't change the lines above this*********
 			
-			ship.draw(graphToBack);
+			raft.draw(graphToBack);
 			
+			for(int e = 0; e < 5; e++){
+				(logStream.get(e)).move("DOWN");
+				logStream.get(e).draw(graphToBack);
+			}	
 			
 			//add code to move stuff
 			if(keys[0] == true)
 			{
-				if(ship.getX() >= -10){
-					ship.move("LEFT");
+				if(raft.getX() >= -10){
+					raft.move("LEFT");
 				}
-				
 			}
 			
 			if(keys[1] == true)
 			{
-				if(ship.getX() <= 720){
-					ship.move("RIGHT");
+				if(raft.getX() <= 720){
+					raft.move("RIGHT");
 				}
-			}
-			
-			if(keys[2] == true)
-			{
-				
 			}
 			
 			twoDGraph.drawImage(back, null, 0, 0);
@@ -113,10 +114,6 @@ public class Downstream extends Canvas implements KeyListener, Runnable
 			{
 				keys[1] = true;
 			}
-			if (e.getKeyCode() == KeyEvent.VK_SPACE)
-			{
-				keys[2] = true;
-			}
 			repaint();
 		}
 
@@ -129,10 +126,6 @@ public class Downstream extends Canvas implements KeyListener, Runnable
 			if (e.getKeyCode() == KeyEvent.VK_RIGHT)
 			{
 				keys[1] = false;
-			}
-			if (e.getKeyCode() == KeyEvent.VK_SPACE)
-			{
-				keys[2] = false;
 			}
 			repaint();
 		}
