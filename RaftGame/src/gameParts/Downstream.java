@@ -40,9 +40,14 @@ public class Downstream extends Canvas implements KeyListener, Runnable
 		logStream = new ArrayList<Log>();
 		
 		for(int e = 0; e < 5; e++){
-			randX = (int)(Math.random() * 750);
+			randX = (int)(Math.random() * 600);
 			logStream.add(new Log(randX, (e-1)*200, 2));
 		}
+		
+		this.addKeyListener(this);
+		new Thread(this).start();
+
+		setVisible(true);
 	}
 	
 	public void update(Graphics window)
@@ -81,7 +86,7 @@ public class Downstream extends Canvas implements KeyListener, Runnable
 			for(int e = 0; e < 5; e++){
 				(logStream.get(e)).move("DOWN");
 				logStream.get(e).draw(graphToBack);
-			}	
+			}
 			
 			//add code to move stuff
 			if(keys[0] == true)
