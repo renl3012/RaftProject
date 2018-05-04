@@ -25,7 +25,11 @@ public class Downstream extends Canvas implements KeyListener, Runnable
 	private Raft raft;
 	private boolean[] keys;
 	private Image backgroundPic;
+	private Log currentLog;
 	private int randX;
+	private int lives;
+	private int score;
+	private boolean freeze;
 	
 	private Log branch;
 	
@@ -36,6 +40,8 @@ public class Downstream extends Canvas implements KeyListener, Runnable
 	public Downstream(){
 		raft = new Raft();
 		keys = new boolean[2];
+		lives = 3;
+		score = 0;
 		
 		logStream = new ArrayList<Log>();
 		
@@ -48,6 +54,20 @@ public class Downstream extends Canvas implements KeyListener, Runnable
 		new Thread(this).start();
 
 		setVisible(true);
+	}
+	
+	public void intro(Graphics window){
+		Graphics2D twoDGraph = (Graphics2D)window;
+
+
+		if(back==null)
+		   back = (BufferedImage)(createImage(getWidth(),getHeight()));
+
+
+		Graphics graphToBack = back.createGraphics();
+		
+		graphToBack.setColor(Color.BLACK);
+		graphToBack.drawRect(0, 0, 750, 992);
 	}
 	
 	public void update(Graphics window)
@@ -78,14 +98,44 @@ public class Downstream extends Canvas implements KeyListener, Runnable
 			}
 
 			graphToBack.drawImage(backgroundPic, 0, 0, 750, 992, null);
+			graphToBack.setColor(Color.YELLOW);
+			graphToBack.drawString("LIVES: " + lives, 50, 50);
+			graphToBack.drawString("SCORE: " + score, 650, 50); 
 			
 			//********don't change the lines above this*********
 			
 			raft.draw(graphToBack);
 			
 			for(int e = 0; e < 5; e++){
-				(logStream.get(e)).move("DOWN");
-				logStream.get(e).draw(graphToBack);
+				currentLog = logStream.get(e);
+				currentLog.move("DOWN");
+				currentLog.draw(graphToBack);
+				
+				if(currentLog.getY() >= raft.getY() && currentLog.getY() <= raft.getY() + 100){
+					if(currentLog.getX() >= raft.getX() && currentLog.getX() <= raft.getX() + 100){
+						freeze = true;
+						lives -= 1;
+						graphToBack.setColor(Color.YELLOW);
+						graphToBack.drawString("LIVES: " + lives, 50, 50);
+					}
+				}
+				
+				if(currentLog.getY() >= 1000){
+					currentLog.setY(-200);
+					randX = (int)(Math.random() * 600);
+					currentLog.setX(randX);
+				}
+			}
+			
+			if(freeze){
+				for(int f = 0; f < 5; f++){
+					logStream.get(f).setSpeed(0);
+				}
+			}
+			
+			if(score == 0){
+				graphToBack.setColor(Color.BLACK);
+				graphToBack.drawString("GAME OVER", 300, 500);
 			}
 			
 			//add code to move stuff

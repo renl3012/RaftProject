@@ -24,7 +24,7 @@ public class Raft extends MovingThing{
 		
 		try
 		{
-			image = ImageIO.read(new File(System.getProperty("user.dir") + "\\src\\gameParts\\raft.jpg"));
+			image = ImageIO.read(new File(System.getProperty("user.dir") + "\\src\\gameParts\\raft.png"));
 		}
 		catch(Exception e)
 		{
