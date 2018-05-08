@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.lang.Math;
 import javax.imageio.ImageIO;
 import gameParts.*;
+
 import java.awt.Image;
 
 
@@ -26,16 +27,16 @@ public class Downstream extends Canvas implements KeyListener, Runnable
 	private boolean[] keys;
 	private Image backgroundPic;
 	private Log currentLog;
+	private Log partnerLog;
 	private int randX;
+	private int otherRandX;
 	private int lives;
 	private int score;
 	private boolean freeze;
 	
-	private Log branch;
-	
 	private ManyLogs send;
 	private Log[][] transfer;
-	private ArrayList<Log> logStream;
+
 	
 	public Downstream(){
 		raft = new Raft();
@@ -43,12 +44,10 @@ public class Downstream extends Canvas implements KeyListener, Runnable
 		lives = 3;
 		score = 0;
 		
-		logStream = new ArrayList<Log>();
+		send = new ManyLogs();
+		transfer = new Log[5][2];
+		transfer = send.getLogs();
 		
-		for(int e = 0; e < 5; e++){
-			randX = (int)(Math.random() * 600);
-			logStream.add(new Log(randX, (e-1)*200, 2));
-		}
 		
 		this.addKeyListener(this);
 		new Thread(this).start();
@@ -106,14 +105,26 @@ public class Downstream extends Canvas implements KeyListener, Runnable
 			
 			raft.draw(graphToBack);
 			
-			for(int e = 0; e < 5; e++){
-				currentLog = logStream.get(e);
+			//for(int e = 0; e < 10; e++){
+			for(int a = 0; a < 5; a++){
+				currentLog = transfer[a][0];
+				partnerLog = transfer[a][1];
 				currentLog.move("DOWN");
+				partnerLog.move("DOWN");
 				currentLog.draw(graphToBack);
+				partnerLog.draw(graphToBack);
 				
-				if(currentLog.getY() >= raft.getY() && currentLog.getY() <= raft.getY() + 100){
-					if(currentLog.getX() >= raft.getX() && currentLog.getX() <= raft.getX() + 100){
-						freeze = true;
+				//Work on this section a lot
+				if(currentLog.getY() + 50 >= raft.getY() && currentLog.getY() + 50 <= raft.getY() + 100){
+					if((currentLog.getX() >= raft.getX() && currentLog.getX() <= raft.getX() + 60)||(currentLog.getX()+125 >= raft.getX() && currentLog.getX()+125 <= raft.getX()+60)){
+						lives -= 1;
+						graphToBack.setColor(Color.YELLOW);
+						graphToBack.drawString("LIVES: " + lives, 50, 50);
+					}
+				}
+				
+				if(partnerLog.getY() + 50 >= raft.getY() && partnerLog.getY() + 50 <= raft.getY() + 100){
+					if(partnerLog.getX() >= raft.getX() && partnerLog.getX() <= raft.getX() + 100){
 						lives -= 1;
 						graphToBack.setColor(Color.YELLOW);
 						graphToBack.drawString("LIVES: " + lives, 50, 50);
@@ -122,33 +133,33 @@ public class Downstream extends Canvas implements KeyListener, Runnable
 				
 				if(currentLog.getY() >= 1000){
 					currentLog.setY(-200);
-					randX = (int)(Math.random() * 600);
+					randX = (int)(Math.random() * 450);
 					currentLog.setX(randX);
 				}
-			}
-			
-			if(freeze){
-				for(int f = 0; f < 5; f++){
-					logStream.get(f).setSpeed(0);
+				
+				//Change this part a lot too
+				if(partnerLog.getY() >= 1000){
+					partnerLog.setY(-200);
+					otherRandX = (int)((Math.random() * 50)+250);
+					partnerLog.setX(randX);
 				}
-			}
+			}	
 			
-			if(score == 0){
+			if(score == -1){
 				graphToBack.setColor(Color.BLACK);
 				graphToBack.drawString("GAME OVER", 300, 500);
 			}
 			
-			//add code to move stuff
 			if(keys[0] == true)
 			{
-				if(raft.getX() >= -10){
+				if(raft.getX() >= 0){
 					raft.move("LEFT");
 				}
 			}
 			
 			if(keys[1] == true)
 			{
-				if(raft.getX() <= 720){
+				if(raft.getX() <= 650){
 					raft.move("RIGHT");
 				}
 			}
