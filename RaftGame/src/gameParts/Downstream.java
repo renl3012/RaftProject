@@ -24,6 +24,9 @@ public class Downstream extends Canvas implements KeyListener, Runnable
 
 	private BufferedImage back;
 	private Raft raft;
+	private GameOver sign;
+	private Instructions info;
+	
 	private boolean[] keys;
 	private Image backgroundPic;
 	private Log currentLog;
@@ -40,7 +43,9 @@ public class Downstream extends Canvas implements KeyListener, Runnable
 	
 	public Downstream(){
 		raft = new Raft();
-		keys = new boolean[2];
+		keys = new boolean[3];
+		sign = new GameOver();
+		info = new Instructions();
 		lives = 3;
 		score = 0;
 		
@@ -55,7 +60,7 @@ public class Downstream extends Canvas implements KeyListener, Runnable
 		setVisible(true);
 	}
 	
-	public void intro(Graphics window){
+	/*public void intro(Graphics window){
 		Graphics2D twoDGraph = (Graphics2D)window;
 
 
@@ -67,7 +72,14 @@ public class Downstream extends Canvas implements KeyListener, Runnable
 		
 		graphToBack.setColor(Color.BLACK);
 		graphToBack.drawRect(0, 0, 750, 992);
-	}
+		
+		graphToBack.setColor(Color.WHITE);
+		graphToBack.drawString("INSTRUCTIONS:", 300, 450);
+		graphToBack.drawString("Use the right and left arrows to move the raft and dodge the moving logs.", 300, 500);
+		graphToBack.drawString("If you collide with a log, you lose one life. If you move between two logs without colliding with a log, your score increases.", 300, 550);
+		
+		twoDGraph.drawImage(back, null, 0, 0);
+	}*/
 	
 	public void update(Graphics window)
 	   {
@@ -76,7 +88,7 @@ public class Downstream extends Canvas implements KeyListener, Runnable
 
 		public void paint( Graphics window )
 		{
-
+			
 			Graphics2D twoDGraph = (Graphics2D)window;
 
 
@@ -96,74 +108,109 @@ public class Downstream extends Canvas implements KeyListener, Runnable
 				System.out.println("hi");
 			}
 
-			graphToBack.drawImage(backgroundPic, 0, 0, 750, 992, null);
-			graphToBack.setColor(Color.YELLOW);
-			graphToBack.drawString("LIVES: " + lives, 50, 50);
-			graphToBack.drawString("SCORE: " + score, 650, 50); 
+			info.draw(graphToBack);
 			
-			//********don't change the lines above this*********
-			
-			raft.draw(graphToBack);
-			
-			//for(int e = 0; e < 10; e++){
-			for(int a = 0; a < 5; a++){
-				currentLog = transfer[a][0];
-				partnerLog = transfer[a][1];
-				currentLog.move("DOWN");
-				partnerLog.move("DOWN");
-				currentLog.draw(graphToBack);
-				partnerLog.draw(graphToBack);
+			if(keys[2] == true){
+				graphToBack.drawImage(backgroundPic, 0, 0, 750, 992, null);
+				graphToBack.setColor(Color.YELLOW);
+				graphToBack.drawString("LIVES: " + lives, 50, 50);
+				graphToBack.drawString("SCORE: " + score, 650, 50); 
 				
-				//Work on this section a lot
-				if(currentLog.getY() + 50 >= raft.getY() && currentLog.getY() + 50 <= raft.getY() + 100){
-					if((currentLog.getX() >= raft.getX() && currentLog.getX() <= raft.getX() + 60)||(currentLog.getX()+125 >= raft.getX() && currentLog.getX()+125 <= raft.getX()+60)){
-						lives -= 1;
-						graphToBack.setColor(Color.YELLOW);
-						graphToBack.drawString("LIVES: " + lives, 50, 50);
+				//********don't change the lines above this*********
+				
+				raft.draw(graphToBack);
+				
+				//for(int e = 0; e < 10; e++){
+				for(int a = 0; a < 5; a++){
+					currentLog = transfer[a][0];
+					partnerLog = transfer[a][1];
+					currentLog.move("DOWN");
+					partnerLog.move("DOWN");
+					currentLog.draw(graphToBack);
+					partnerLog.draw(graphToBack);
+					
+					//Work on this section a lot
+					if(currentLog.getY() + 115 >= raft.getY() + 20 && currentLog.getY() + 115 <= raft.getY() + 100){
+						if((currentLog.getX() + 20 >= raft.getX() && currentLog.getX() <= raft.getX() + 60)||(currentLog.getX()+ 120 >= raft.getX() && currentLog.getX() + 120 <= raft.getX() + 60)){
+							lives -= 1;
+							currentLog.setX(-200);
+							graphToBack.setColor(Color.YELLOW);
+							graphToBack.drawString("LIVES: " + lives, 50, 50);
+						}else if(currentLog.getX() + 20 <= raft.getX() && currentLog.getX() + 120 >= raft.getX() + 60){
+							lives -= 1;
+							currentLog.setX(-200);
+							graphToBack.setColor(Color.YELLOW);
+							graphToBack.drawString("LIVES: " + lives, 50, 50);
+						}
+					}
+					
+					if(partnerLog.getY() + 115 >= raft.getY() + 20 && partnerLog.getY() + 115 <= raft.getY() + 100){
+						if((partnerLog.getX() + 20 >= raft.getX() && partnerLog.getX() <= raft.getX() + 60)||(partnerLog.getX()+ 120 >= raft.getX() && partnerLog.getX() + 120 <= raft.getX() + 60)){
+							lives -= 1;
+							partnerLog.setX(-200);
+							graphToBack.setColor(Color.YELLOW);
+							graphToBack.drawString("LIVES: " + lives, 50, 50);
+						}else if(partnerLog.getX() + 20 <= raft.getX() && partnerLog.getX() + 120 >= raft.getX() + 60){
+							lives -= 1;
+							partnerLog.setX(-200);
+							graphToBack.setColor(Color.YELLOW);
+							graphToBack.drawString("LIVES: " + lives, 50, 50);
+						}
+					}
+					
+					//scoring
+					if(raft.getX() >= currentLog.getX() + 120 && raft.getX() <= partnerLog.getX() + 20){
+						if(Math.abs(currentLog.getY() - raft.getY()) <= 2){
+							raft.setPos(raft.getX(), raft.getY() - 3);
+							score += 1;
+						}
+					}
+					
+					//rolling logs
+					if(currentLog.getY() >= 1000){
+						currentLog.setY(-200);
+						randX = (int)(Math.random() * 450);
+						currentLog.setX(randX);
+					}
+					
+					if(partnerLog.getY() >= 1000){
+						partnerLog.setY(-200);
+						otherRandX = (int)((Math.random() * 50)+250);
+						partnerLog.setX(randX + otherRandX);
+					}
+				}	
+				
+				if(score == -1){
+					sign.draw(graphToBack);
+					//graphToBack.setColor(Color.BLACK);
+					//graphToBack.drawString("GAME OVER", 300, 500);
+				}
+				
+				if(lives == 0){
+					for(int b = 0; b < 5; b++){
+						transfer[b][0].setSpeed(0);
+						transfer[b][1].setSpeed(0);
+					}
+					sign.draw(graphToBack);
+					//graphToBack.setColor(Color.BLACK);
+					//graphToBack.drawString("GAME OVER", 300, 500);
+				}
+				
+				if(keys[0] == true)
+				{
+					if(raft.getX() >= 0){
+						raft.move("LEFT");
 					}
 				}
 				
-				if(partnerLog.getY() + 50 >= raft.getY() && partnerLog.getY() + 50 <= raft.getY() + 100){
-					if(partnerLog.getX() >= raft.getX() && partnerLog.getX() <= raft.getX() + 100){
-						lives -= 1;
-						graphToBack.setColor(Color.YELLOW);
-						graphToBack.drawString("LIVES: " + lives, 50, 50);
+				if(keys[1] == true)
+				{
+					if(raft.getX() <= 650){
+						raft.move("RIGHT");
 					}
 				}
 				
-				if(currentLog.getY() >= 1000){
-					currentLog.setY(-200);
-					randX = (int)(Math.random() * 450);
-					currentLog.setX(randX);
-				}
-				
-				//Change this part a lot too
-				if(partnerLog.getY() >= 1000){
-					partnerLog.setY(-200);
-					otherRandX = (int)((Math.random() * 50)+250);
-					partnerLog.setX(randX);
-				}
-			}	
-			
-			if(score == -1){
-				graphToBack.setColor(Color.BLACK);
-				graphToBack.drawString("GAME OVER", 300, 500);
 			}
-			
-			if(keys[0] == true)
-			{
-				if(raft.getX() >= 0){
-					raft.move("LEFT");
-				}
-			}
-			
-			if(keys[1] == true)
-			{
-				if(raft.getX() <= 650){
-					raft.move("RIGHT");
-				}
-			}
-			
 			twoDGraph.drawImage(back, null, 0, 0);
 		}
 
@@ -179,6 +226,9 @@ public class Downstream extends Canvas implements KeyListener, Runnable
 			if (e.getKeyCode() == KeyEvent.VK_RIGHT)
 			{
 				keys[1] = true;
+			}
+			if(e.getKeyCode() == KeyEvent.VK_SPACE){
+				keys[2] = true;
 			}
 			repaint();
 		}
