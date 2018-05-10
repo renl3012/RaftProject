@@ -11,7 +11,7 @@ public class Raft extends MovingThing{
 	private Image image;
 
 	public Raft(){
-		this(300, 800, 2);
+		this(300, 800, 3);
 	}
 	
 	public Raft(int x, int y){

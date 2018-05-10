@@ -26,6 +26,7 @@ public class Downstream extends Canvas implements KeyListener, Runnable
 	private Raft raft;
 	private GameOver sign;
 	private Instructions info;
+	private PowerUp clock;
 	
 	private boolean[] keys;
 	private Image backgroundPic;
@@ -35,7 +36,6 @@ public class Downstream extends Canvas implements KeyListener, Runnable
 	private int otherRandX;
 	private int lives;
 	private int score;
-	private boolean freeze;
 	
 	private ManyLogs send;
 	private Log[][] transfer;
@@ -46,6 +46,7 @@ public class Downstream extends Canvas implements KeyListener, Runnable
 		keys = new boolean[3];
 		sign = new GameOver();
 		info = new Instructions();
+		clock = new PowerUp((int)((Math.random()*630)+50), 830);
 		lives = 3;
 		score = 0;
 		
@@ -59,27 +60,6 @@ public class Downstream extends Canvas implements KeyListener, Runnable
 
 		setVisible(true);
 	}
-	
-	/*public void intro(Graphics window){
-		Graphics2D twoDGraph = (Graphics2D)window;
-
-
-		if(back==null)
-		   back = (BufferedImage)(createImage(getWidth(),getHeight()));
-
-
-		Graphics graphToBack = back.createGraphics();
-		
-		graphToBack.setColor(Color.BLACK);
-		graphToBack.drawRect(0, 0, 750, 992);
-		
-		graphToBack.setColor(Color.WHITE);
-		graphToBack.drawString("INSTRUCTIONS:", 300, 450);
-		graphToBack.drawString("Use the right and left arrows to move the raft and dodge the moving logs.", 300, 500);
-		graphToBack.drawString("If you collide with a log, you lose one life. If you move between two logs without colliding with a log, your score increases.", 300, 550);
-		
-		twoDGraph.drawImage(back, null, 0, 0);
-	}*/
 	
 	public void update(Graphics window)
 	   {
@@ -110,11 +90,13 @@ public class Downstream extends Canvas implements KeyListener, Runnable
 
 			info.draw(graphToBack);
 			
+			
 			if(keys[2] == true){
 				graphToBack.drawImage(backgroundPic, 0, 0, 750, 992, null);
 				graphToBack.setColor(Color.YELLOW);
 				graphToBack.drawString("LIVES: " + lives, 50, 50);
 				graphToBack.drawString("SCORE: " + score, 650, 50); 
+				clock.draw(graphToBack);
 				
 				//********don't change the lines above this*********
 				
@@ -158,10 +140,20 @@ public class Downstream extends Canvas implements KeyListener, Runnable
 						}
 					}
 					
+					if(clock.getY() + 50 >= raft.getY() + 20 && partnerLog.getY() + 50 <= raft.getY() + 100){
+						if((clock.getX() >= raft.getX() && clock.getX() <= raft.getX() + 60)||(clock.getX()+ 50 >= raft.getX() && clock.getX() + 50 <= raft.getX() + 60)){
+							clock.setPos(-500, 500);
+							for(int b = 0; b < 5; b++){
+								transfer[b][0].setSpeed(2);
+								transfer[b][1].setSpeed(2);
+							}
+						}
+					}
+					
 					//scoring
 					if(raft.getX() >= currentLog.getX() + 120 && raft.getX() <= partnerLog.getX() + 20){
-						if(Math.abs(currentLog.getY() - raft.getY()) <= 2){
-							raft.setPos(raft.getX(), raft.getY() - 3);
+						if(Math.abs(currentLog.getY() - raft.getY()) <= 1){
+							raft.setPos(raft.getX(), raft.getY());
 							score += 1;
 						}
 					}

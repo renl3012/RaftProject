@@ -13,8 +13,8 @@ public class ManyLogs {
 		for(int i = 0; i <= 4; i++){
 			randX = (int)(Math.random() * 450);
 			otherRandX = (int)((Math.random() * 50)+250);
-			logs[i][0] = new Log(randX, (i-1)*250, 2);
-			logs[i][1] = new Log(randX + otherRandX, (i-1)*250, 2);
+			logs[i][0] = new Log(randX, (i-1)*250, 3);
+			logs[i][1] = new Log(randX + otherRandX, (i-1)*250, 3);
 		}
 	}
 	
